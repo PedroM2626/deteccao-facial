@@ -3,9 +3,11 @@
 Aplicativo didático para coletar imagens rotuladas, treinar um reconhecedor e identificar rostos em uma imagem final. O fluxo permite adicionar quantas fotos e pessoas quiser, inclusive processando pastas inteiras e salvando todas as faces detectadas.
 
 ## Conteúdo
-- `face_recognition_app.py`: script interativo para coleta, treino e predição.
+- `face_recognition_app.py`: script interativo (CLI) para coleta, treino e predição.
+- `face_recognition_app.ipynb`: notebook com upload de imagens e visualização inline.
 - `dataset/`: faces recortadas por pessoa em `dataset/<nome>/NNN.jpg`.
 - `trainer/`: modelos e labels (`trainer.yml` para LBPH, `model_tf.h5` para CNN, `labels.pickle`).
+- `requirements.txt`: dependências base e de notebook.
 
 ## Requisitos
 - Python 3.9+ (Windows, macOS ou Linux)
@@ -21,6 +23,7 @@ pip install opencv-contrib-python numpy
 # opcionais
 pip install mtcnn
 pip install tensorflow
+pip install jupyterlab ipywidgets matplotlib
 ```
 
 ## Uso
@@ -51,6 +54,11 @@ python face_recognition_app.py
 - Opcional: MTCNN (se `mtcnn` estiver instalado). Controle pelo ambiente:
   - PowerShell: `$env:FACE_USE_TF_DETECTOR=1` habilita MTCNN; `0` desativa.
   - Por padrão, se `mtcnn` estiver instalado, MTCNN é usado.
+
+## Classificação
+- LBPH: `cv2.face.LBPHFaceRecognizer_create()` (requer `opencv-contrib-python`).
+- CNN: rede simples treinada do zero (`200x200x1`), salva em `trainer/model_tf.h5`.
+- Limiar de desconhecido para LBPH: `LBPH_CONFIDENCE_THRESHOLD = 80.0`.
 
 ## Anexar imagens (upload) em Jupyter
 Em terminal, “anexar” arquivos não é suportado; é necessário informar caminhos. Em Jupyter Notebook é possível fazer upload com `ipywidgets`.
@@ -98,10 +106,33 @@ VBox([name, u, btn])
 
 Depois de coletar, volte ao terminal ou crie células adicionais para treinar e prever usando o script.
 
+Além disso, o repositório já contém `face_recognition_app.ipynb` com células prontas para upload, treino e predição. Se desejar parear com o código usando Jupytext:
+
+```
+jupytext --sync face_recognition_app.ipynb
+jupytext --set-formats ipynb,py:percent face_recognition_app.ipynb
+```
+
 ## Perguntas frequentes
 - “cv2.face não disponível”: instale `opencv-contrib-python`.
 - Ambiente sem janelas: `output.jpg` é gerado mesmo sem `cv2.imshow`.
 - Desempenho/qualidade: colete muitas imagens por pessoa, com variação de iluminação e ângulos.
+
+## Estrutura do Projeto
+```
+.
+├─ face_recognition_app.py
+├─ face_recognition_app.ipynb
+├─ README.md
+├─ LICENSE.txt
+├─ requirements.txt
+├─ dataset/            # criado pelo script
+└─ trainer/            # criado pelo script
+```
+
+## Transfer Learning
+- O projeto não utiliza transfer learning com TensorFlow atualmente.
+- O modo `cnn` treina uma rede simples do zero. Caso deseje TL (ex.: `MobileNetV2` congelado + cabeça densa), pode ser integrado mantendo a interface atual.
 
 ## Licença
 - Consulte o arquivo `LICENSE`.
