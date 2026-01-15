@@ -170,8 +170,8 @@ def collect_images_interactive():
             print(f'Salvo {out_path}')
 
 
-def train_recognizer(method='lbph'):
-    print('\n--- Treinando reconhecedor ---')
+def train_recognizer(method='lbph', progress_callback=None):
+    if progress_callback: progress_callback('Iniciando treinamento...')
     dataset_dir = Path('dataset')
     if not dataset_dir.exists():
         print('Pasta dataset/ não encontrada. Colete imagens primeiro.')
@@ -223,6 +223,7 @@ def train_recognizer(method='lbph'):
             keras.layers.Dense(num_classes, activation='softmax'),
         ])
         model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+        if progress_callback: progress_callback('Treinando CNN (isso pode demorar)...')
         model.fit(X, y, epochs=10, batch_size=16, verbose=1)
         model_path = Path('trainer') / 'model_tf.h5'
         model.save(str(model_path))
@@ -245,13 +246,13 @@ def train_recognizer(method='lbph'):
         return True
 
 
-def predict_on_image():
+def predict_on_image(input_image=None):
     labels_path = Path('trainer') / 'labels.pickle'
     model_tf_path = Path('trainer') / 'model_tf.h5'
     model_lbph_path = Path('trainer') / 'trainer.yml'
     if not labels_path.exists() or (not model_tf_path.exists() and not model_lbph_path.exists()):
         print('Modelo não encontrado. Treine primeiro usando a etapa de coleta e treino.')
-        return
+        return None
 
     with open(labels_path, 'rb') as f:
         label_ids = pickle.load(f)
@@ -265,17 +266,21 @@ def predict_on_image():
             recognizer = cv2.face.LBPHFaceRecognizer_create()
         except Exception:
             print('ERRO: cv2.face não disponível. Instale `opencv-contrib-python` ou treine com CNN.')
-            return
+            return None
         recognizer.read(str(model_lbph_path))
 
-    img_path = input('\nCaminho da imagem para reconhecer: ').strip()
-    if not os.path.exists(img_path):
-        print('Arquivo não encontrado.')
-        return
-    image = cv2.imread(img_path)
+    if input_image is None:
+        img_path = input('\nCaminho da imagem para reconhecer: ').strip()
+        if not os.path.exists(img_path):
+            print('Arquivo não encontrado.')
+            return None
+        image = cv2.imread(img_path)
+    else:
+        image = input_image
+
     if image is None:
         print('Erro ao ler a imagem.')
-        return
+        return None
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     faces = detect_faces(gray)
     if len(faces) == 0:
@@ -305,13 +310,7 @@ def predict_on_image():
     out_path = 'output.jpg'
     cv2.imwrite(out_path, image)
     print(f'Resultado salvo em {out_path}.')
-    try:
-        cv2.imshow('Resultado', image)
-        print('Pressione qualquer tecla na janela para continuar...')
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-    except Exception:
-        pass
+    return image
 
 
 def main():

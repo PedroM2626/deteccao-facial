@@ -3,6 +3,7 @@
 Aplicativo didático para coletar imagens rotuladas, treinar um reconhecedor e identificar rostos em uma imagem final. O fluxo permite adicionar quantas fotos e pessoas quiser, inclusive processando pastas inteiras e salvando todas as faces detectadas.
 
 ## Conteúdo
+- `app.py`: Interface web moderna usando Streamlit.
 - `face_recognition_app.py`: script interativo (CLI) para coleta, treino e predição.
 - `face_recognition_app.ipynb`: notebook com upload de imagens e visualização inline.
 - `dataset/`: faces recortadas por pessoa em `dataset/<nome>/NNN.jpg`.
@@ -26,7 +27,14 @@ pip install tensorflow
 pip install jupyterlab ipywidgets matplotlib
 ```
 
-## Uso
+## Uso (Interface Web - Recomendado)
+1) Execute o Streamlit
+```
+streamlit run app.py
+```
+2) Navegue pelo menu lateral para coletar dados, treinar o modelo e realizar o reconhecimento.
+
+## Uso (CLI)
 1) Execute o aplicativo
 ```
 python face_recognition_app.py
