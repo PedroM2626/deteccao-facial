@@ -2,6 +2,8 @@
 
 Aplicativo didático para coletar imagens rotuladas, treinar um reconhecedor e identificar rostos em uma imagem final. O fluxo permite adicionar quantas fotos e pessoas quiser, inclusive processando pastas inteiras e salvando todas as faces detectadas.
 
+**Acesse a versão online (Gradio) hospedada no Hugging Face:** [Facial Recognition Space](https://huggingface.co/spaces/PedroM2626/facial-recognition)
+
 ## Conteúdo
 - `app.py`: Interface web moderna usando Streamlit.
 - `face_recognition_app.py`: script interativo (CLI) para coleta, treino e predição.
